@@ -19,8 +19,6 @@ do
   resource=`basename "${path}"`
   branchname="${resource//*./}"
 
-  echo "[${resource}]"
-
   # go into the repo
   cd "${path}" || exit 1
 
@@ -91,8 +89,13 @@ do
     # double check the translated percentage
     if [[ "${perc}" -lt "${MINPERC}" ]]
     then
+      # this should not happen, since we've asked tx too
       echo "[${resource}] Not enough translations in ${f} (${perc}%)"
       continue
+    elif [[ "${perc}" -eq "100" && "${tr}" -lt "${total}" ]]
+    then
+      # if (due to rounding) the 100% is not "fully" translated, show 99%
+      perc=99
     fi
 
     # Whether this is a new translation or not
@@ -138,7 +141,6 @@ do
 
       # compare difference and commit files
       count=`msgcat -u "${f}" "${targetname}" 2>&1 | wc -c`
-      echo "${f} ${count}"
       if [[ "${count}" -gt "0" ]]
       then
         # update translation
@@ -147,8 +149,6 @@ do
         # commit title
         msgtitle="Update"
       else
-        echo "[${resource}] ${f} and ${targetname} identical."
-
         # avoid pull next round
         touch --no-create "${targetname}"
 
@@ -157,7 +157,6 @@ do
     fi
 
     # commit the update
-    echo "${msgtitle} ${targetname}"
     $GIT commit -m "I18n: ${msgtitle} translation ${lang} (${perc}%)." \
                 -m "${stats}" \
                 -m "Transifex (https://www.transifex.com/projects/p/xfce/)." \
@@ -170,8 +169,12 @@ do
   # push changes if required
   if [[ "${needspush}" -eq "1" ]]
   then
-    echo "[${resource}] Push changes to git repository"
-    $GIT push --quiet 1>/dev/null
+    err=`$GIT push --quiet 2>&1`
+    if [[ "$?" -ne "0" ]]
+    then
+      echo "[${resource}] git push failed:"
+      echo "${err}"
+    fi
   fi
 
   # check if we need to generate the pot file
