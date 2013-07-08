@@ -152,7 +152,7 @@ EOF
       lang=`basename ${f}`
       lang=${lang%.po.new}
       targetname="${podir}/${lang}.po"
-      
+
       # check if the target exists
       if [[ ! -f "${targetname}" ]]
       then
@@ -215,7 +215,26 @@ EOF
     potfile="${podir}/${resource}.pot"
     if [[ ! -f "${potfile}" ]]
     then
-      echo "[${resource}] Failed to generate POT file: ${err}"
+      # generate message
+      mailx -s "[Xfce] Intltool-update failed for ${resource}" "nick@xfce.org" << EOF
+Hi,
+
+This is an automatically generated message from the Xfce Transifex bot.
+Please do not reply to this message.
+
+`intltool-update --pot` reported the following issue:
+
+====
+${err}
+====
+
+Please resolve this issue in the repository.
+
+Sincerely,
+Xfce
+EOF
+
+      echo "[${resource}] Failed to generate POT file."
       continue
     fi
   fi
