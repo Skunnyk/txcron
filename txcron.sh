@@ -69,8 +69,33 @@ do
     err=`msgfmt --check -o /dev/null "${f}" 2>&1`
     if [[ "$?" -ne "0" ]]
     then
-      echo "[${resource}] msgfmt check ${f} failed:"
-      echo "${err}"
+      # generate message
+      mailx -s "[Xfce] Msgfmt failed for ${resource}" "${author}" << EOF
+Hi,
+
+This is an automatically generated message from the Xfce Transifex bot.
+Please do not reply to this message, but use the xfce-i18n mailing list
+if you don't know what to do.
+
+Commit of the by you modified translation was not successfull.
+
+`msgfmt --check` reported the following issue:
+
+====
+${err}
+====
+
+Please resolve this issue at transifex.com; for now your translation will
+be skipped until make make another submission.
+
+Sincerely,
+Xfce
+
+https://mail.xfce.org/mailman/listinfo/xfce-i18n
+https://www.transifex.com/projects/p/xfce/
+EOF
+
+      echo "[${resource}] msgfmt check ${f} failed, send message to ${author}"
       continue
     fi
 
