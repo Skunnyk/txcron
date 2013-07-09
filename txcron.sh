@@ -66,7 +66,7 @@ do
     author=${author:-${NOBODY}}
 
     # check the translation
-    err=`msgfmt --check -o /dev/null "${f}" 2>&1`
+    err=`msgfmt --check -o /dev/null ${f} 2>&1`
     if [[ "$?" -ne "0" ]]
     then
       # generate message
@@ -96,6 +96,7 @@ https://www.transifex.com/projects/p/xfce/
 EOF
 
       echo "[${resource}] msgfmt check ${f} failed, send message to ${author}"
+      echo "${err}"
       continue
     fi
 
