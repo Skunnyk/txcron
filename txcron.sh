@@ -79,7 +79,7 @@ if you don't know what to do.
 
 Commit of the by you modified translation was not successfull.
 
-`msgfmt --check` reported the following issue:
+msgfmt --check, reported the following issue:
 
 ====
 ${err}
@@ -223,7 +223,7 @@ Hi,
 This is an automatically generated message from the Xfce Transifex bot.
 Please do not reply to this message.
 
-`intltool-update --pot` reported the following issue:
+intltool-update --pot, reported the following issue:
 
 ====
 ${err}
