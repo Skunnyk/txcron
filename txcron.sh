@@ -66,7 +66,7 @@ do
     author=${author:-${NOBODY}}
 
     # check the translation
-    err=`msgfmt --check -o /dev/null ${f} 2>&1`
+    err=`msgfmt --check -o /dev/null "${f}" 2>&1`
     if [[ "$?" -ne "0" ]]
     then
       # generate message
