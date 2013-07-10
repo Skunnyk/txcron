@@ -86,7 +86,7 @@ ${err}
 ====
 
 Please resolve this issue at transifex.com; for now your translation will
-be skipped until make make another submission.
+be skipped.
 
 Sincerely,
 Xfce
@@ -95,8 +95,9 @@ https://mail.xfce.org/mailman/listinfo/xfce-i18n
 https://www.transifex.com/projects/p/xfce/
 EOF
 
-      echo "[${resource}] msgfmt check ${f} failed, send message to ${author}"
-      echo "${err}"
+      # echo "[${resource}] msgfmt check ${f} failed, send message to ${author}"
+      # echo "${err}"
+
       continue
     fi
 
