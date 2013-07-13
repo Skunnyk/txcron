@@ -246,6 +246,9 @@ EOF
   count=`msgcat -u "${potcache}" "${potfile}" 2>&1 | wc -c`
   if [[ "${count}" -gt "0" ]]
   then
+    # make sure the new po file is set
+    $TX set -r "${resource}" --source -l en "${potfile}" 1>/dev/null
+
     # push the new translation to transifex.com
     echo "[${resource}] Push new source file to transifex.com."
     $TX push -r "${resource}" --no-interactive --source
