@@ -1,4 +1,21 @@
 #!/bin/bash
+#
+# Copyright (c) 2013 Nick Schermer <nick@xfce.org>
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+#
 
 BASE="$HOME/repos"
 NOBODY="Anonymous <noreply@xfce.org>"
@@ -188,6 +205,16 @@ EOF
                 -m "${stats}" \
                 -m "Transifex (https://www.transifex.com/projects/p/xfce/)." \
                 --author "${author}" --quiet "${targetname}"
+
+    # update credits in database
+    if [[ -f "$HOME/mysql-password" && "${author}" != "${NOBODY}" ]]
+    then
+      mysql -p$(cat $HOME/mysql-password) transifex <<EOF
+        INSERT INTO credits(identity,lang_code)
+          VALUES ('${author}','${lang}')
+          ON DUPLICATE KEY UPDATE n_commits=n_commits+1, last_commit=CURRENT_TIMESTAMP;
+EOF
+    fi
 
     # push later
     needspush=1
