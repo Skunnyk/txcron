@@ -277,8 +277,7 @@ EOF
     $TX set -r "${resource}" --source -l en "${potfile}" 1>/dev/null
 
     # push the new translation to transifex.com
-    echo "[${resource}] Push new source file to transifex.com."
-    $TX push -r "${resource}" --no-interactive --source
+    $TX push -r "${resource}" --no-interactive --source 1>/dev/null
 
     # updated the cached pot file
     cp "${potfile}" "${potcache}"
