@@ -196,6 +196,8 @@ EOF
         # avoid pull next round
         touch --no-create "${targetname}"
 
+        echo "[${resource}] No changes detected between ${f} and ${targetname}"
+
         continue
       fi
     fi
