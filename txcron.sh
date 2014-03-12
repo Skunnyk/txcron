@@ -171,6 +171,7 @@ EOF
       lang=`basename ${f}`
       lang=${lang%.po.new}
       targetname="${podir}/${lang}.po"
+      msgtitle="Update"
 
       # check if the target exists
       if [[ ! -f "${targetname}" ]]
@@ -183,30 +184,15 @@ EOF
         continue
       fi
 
-      # compare difference and commit files
-      count=`msgcat -u "${f}" "${targetname}" 2>&1 | wc -c`
-      if [[ "${count}" -gt "0" ]]
-      then
-        # update translation
-        cp "${f}" "${targetname}"
-
-        # commit title
-        msgtitle="Update"
-      else
-        # avoid pull next round
-        touch --no-create "${targetname}"
-
-        echo "[${resource}] No changes detected between ${f} and ${targetname}"
-
-        continue
-      fi
+      # Update file
+      cp "${f}" "${targetname}"
     fi
 
     # commit the update
     $GIT commit -m "I18n: ${msgtitle} translation ${lang} (${perc}%)." \
                 -m "${stats}" \
                 -m "Transifex (https://www.transifex.com/projects/p/xfce/)." \
-                --author "${author}" --quiet "${targetname}"
+                --author "${author}" --quiet "${targetname}" 1> /dev/null
 
     # update credits in database
     if [[ -f "$HOME/mysql-password" && "${author}" != "${NOBODY}" ]]
