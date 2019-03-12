@@ -79,7 +79,8 @@ do
   for f in `$FIND "${podir}" ".tx/${resource}" -maxdepth 1 -type f -name "*.po.new" -or -type f -name "*_translation" | sort`
   do
     # find the author who made the commit
-    author=`grep -e '^"Last-Translator: .* <.*>\\\\n"$' ${f} | sed -e 's/^"Last-Translator: //' -e 's/\\\\n"$//'`
+    #author=`grep -e '^"Last-Translator: .* <.*>\\\\n"$' ${f} | sed -e 's/^"Last-Translator: //' -e 's/\\\\n"$//'`
+    author=`grep -e '^"Last-Translator: .* <.*>\\(, [0-9]\\+\\)\\?\\\\n"$' ${f} | sed -e 's/^"Last-Translator: //' -e 's/\\(, [0-9]\\+\\)\\?\\\\n"$//'`
     author=${author:-${NOBODY}}
 
     # check the translation
@@ -109,7 +110,7 @@ Sincerely,
 Xfce
 
 https://mail.xfce.org/mailman/listinfo/xfce-i18n
-https://www.transifex.com/projects/p/xfce/
+https://www.transifex.com/xfce/public/
 EOF
 
       # echo "[${resource}] msgfmt check ${f} failed, send message to ${author}"
@@ -191,13 +192,13 @@ EOF
     # commit the update
     $GIT commit -m "I18n: ${msgtitle} translation ${lang} (${perc}%)." \
                 -m "${stats}" \
-                -m "Transifex (https://www.transifex.com/projects/p/xfce/)." \
+                -m "Transifex (https://www.transifex.com/xfce/public/)." \
                 --author "${author}" --quiet "${targetname}" 1> /dev/null
 
     # update credits in database
     if [[ -f "$HOME/mysql-password" && "${author}" != "${NOBODY}" ]]
     then
-      mysql -p$(cat $HOME/mysql-password) transifex <<EOF
+      mysql -u transifex -p$(cat $HOME/mysql-password) transifex <<EOF
         INSERT INTO credits(identity,lang_code)
           VALUES ('${author}','${lang}')
           ON DUPLICATE KEY UPDATE n_commits=n_commits+1, last_commit=CURRENT_TIMESTAMP;
@@ -226,6 +227,8 @@ EOF
     # generate a new potfile
     pushd "${podir}" 1>/dev/null
     err=`$INTLTOOL_UPDATE --pot --gettext-package "${resource}" 2>&1`
+    # We force the CHARSET to UTF-8 to avoid gettext error on compilation...
+    sed -i 's/^"Content-Type: text\/plain; charset=CHARSET\\n"$/"Content-Type: text\/plain; charset=UTF-8\\n"/' ${resource}.pot
     popd 1>/dev/null
 
     # check if the new file exists
@@ -233,7 +236,7 @@ EOF
     if [[ ! -f "${potfile}" ]]
     then
       # generate message
-      mailx -s "[Xfce] Intltool-update failed for ${resource}" "nick@xfce.org" << EOF
+      mailx -s "[Xfce] Intltool-update failed for ${resource}" "infra[at]xfce.org" << EOF
 Hi,
 
 This is an automatically generated message from the Xfce Transifex bot.
