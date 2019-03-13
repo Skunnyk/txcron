@@ -120,7 +120,13 @@ EOF
     fi
 
     # update Project-Id-Version
-    projectversion=`pcregrep -o2 "m4_define.*_version_(major|minor|micro)].*(\d)" configure.ac.in | paste -sd "." -`
+    if [[ -f "configure.ac.in" ]]
+    then
+      projectversion=`pcregrep -o2 "m4_define.*_version_(major|minor|micro)].*(\d)" configure.ac.in | paste -sd "." -`
+    else
+      # fallback to the resource name
+      projectversion=${resource}
+    fi
     sed -i "s/Project-Id-Version:.*/Project-Id-Version: $projectversion\"/" ${f}
 
     # statistics for in the commit message
