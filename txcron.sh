@@ -120,7 +120,7 @@ EOF
     fi
 
     # update Project-Id-Version
-    projectversion=`pcregrep -o2 "m4_define.*_version_(major|minor|micro).*(\d)" configure.ac.in | paste -sd "." -`
+    projectversion=`pcregrep -o2 "m4_define.*_version_(major|minor|micro)].*(\d)" configure.ac.in | paste -sd "." -`
     sed -i "s/Project-Id-Version:.*/Project-Id-Version: $projectversion\"/" ${f}
 
     # statistics for in the commit message
