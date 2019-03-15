@@ -122,7 +122,7 @@ EOF
     # update Project-Id-Version
     if [[ -f "configure.ac.in" ]]
     then
-      projectversion=`pcregrep -o2 "m4_define.*_version_(major|minor|micro)].*(\d)" configure.ac.in | paste -sd "." -`
+      projectversion=`pcregrep -o2 "m4_define.*_version_(major|minor|micro)\].*\[(\d+)\]" configure.ac.in | paste -sd "." -`
     else
       # fallback to the resource name
       projectversion=${resource}
